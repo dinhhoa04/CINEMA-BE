@@ -1,0 +1,22 @@
+spring:
+  application:
+    name: cinema-demo
+  jackson:
+    property-naming-strategy: LOWER_CAMEL_CASE
+
+  # Cấu hình kết nối MySQL
+  datasource:
+    url: jdbc:mysql://localhost:3306/movie_ticket_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    username: root
+    password: 123456
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  # Cấu hình Hibernate (Tự động tạo bảng từ Entity)
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true     # In câu lệnh SQL ra console để dễ debug
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQLDialect
