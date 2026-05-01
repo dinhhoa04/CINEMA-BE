@@ -1,6 +1,7 @@
 package cinema.controller;
 
 import cinema.dto.response.ApiResponse;
+import cinema.dto.response.BookingPageDataResponse;
 import cinema.dto.response.CinemaShowtimeResponse;
 import cinema.service.ShowtimeService;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +32,15 @@ public class ShowtimeController {
         response.setMessage("Lấy lịch chiếu thành công");
         response.setData(data);
 
+        return ResponseEntity.ok(response);
+    }
+
+    // THÊM API NÀY ĐỂ FRONTEND GỌI LẤY GHẾ
+    @GetMapping("/{id}/booking-data")
+    public ResponseEntity<ApiResponse<BookingPageDataResponse>> getBookingData(@PathVariable Long id) {
+        ApiResponse<BookingPageDataResponse> response = new ApiResponse<>();
+        response.setMessage("Lấy dữ liệu phòng chiếu thành công");
+        response.setData(showtimeService.getBookingData(id));
         return ResponseEntity.ok(response);
     }
 }
