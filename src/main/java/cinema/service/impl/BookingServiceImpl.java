@@ -13,6 +13,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.Map;
 import java.util.UUID;
+import cinema.dto.response.BookingHistoryResponse;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -87,5 +91,39 @@ public class BookingServiceImpl implements BookingService {
 
         // Trả về mã vé để Frontend hiển thị
         return booking.getBookingCode();
+    }
+    @Override
+    public List<BookingHistoryResponse> getUserBookings(String email) {
+        // 1. Tìm user theo Email (lấy từ JWT token)
+        User user = userRepository.findByEmail(email).orElseThrow();
+
+        // 2. Kéo toàn bộ vé của user này lên
+        List<Booking> bookings = bookingRepository.findByUserIdOrderByCreatedAtDesc(user.getId());
+
+        // 3. Map sang DTO để trả về Frontend
+        return bookings.stream().map(b -> {
+            Showtime st = b.getShowtime();
+            Movie m = st.getMovie();
+
+            // Lấy danh sách tên ghế (VD: gom thành chuỗi "F5, F6")
+            List<BookingSeat> seats = bookingSeatRepository.findByBookingId(b.getId());
+            String seatNames = seats.stream()
+                    .map(BookingSeat::getSeatCode)
+                    .collect(Collectors.joining(", "));
+
+            return BookingHistoryResponse.builder()
+                    .bookingCode(b.getBookingCode())
+                    .movieTitle(m.getTitle())
+                    .posterUrl(m.getPosterUrl())
+                    .cinemaName(st.getHall().getCinema().getName())
+                    .hallName(st.getHall().getName())
+                    .showDate(st.getStartTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")))
+                    .showTime(st.getStartTime().format(DateTimeFormatter.ofPattern("HH:mm")))
+                    .seatNames(seatNames)
+                    .totalAmount(b.getFinalAmount())
+                    .status(b.getStatus().name())
+                    .bookingDate(b.getCreatedAt().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")))
+                    .build();
+        }).collect(Collectors.toList());
     }
 }

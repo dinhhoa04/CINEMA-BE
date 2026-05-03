@@ -50,4 +50,17 @@ public class MovieServiceImpl implements MovieService {
                 // Thêm language, director... nếu trong DTO của anh có
                 .build();
     }
+    // Trong MovieServiceImpl.java
+    @Override
+    public List<MovieResponse> getComingSoonMovies() {
+        return movieRepository.findByStatus(cinema.enums.MovieStatus.COMING_SOON).stream().map(movie ->
+                MovieResponse.builder()
+                        .id(movie.getId())
+                        .title(movie.getTitle())
+                        .posterUrl(movie.getPosterUrl())
+                        .slug(movie.getSlug())
+                        .releaseDate(movie.getReleaseDate())
+                        .build()
+        ).collect(Collectors.toList());
+    }
 }

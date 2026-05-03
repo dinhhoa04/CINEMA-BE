@@ -3,6 +3,7 @@ package cinema.controller;
 import cinema.dto.response.ApiResponse;
 import cinema.dto.response.BookingPageDataResponse;
 import cinema.dto.response.CinemaShowtimeResponse;
+import cinema.dto.response.MovieShowtimeResponse;
 import cinema.service.ShowtimeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -41,6 +42,14 @@ public class ShowtimeController {
         ApiResponse<BookingPageDataResponse> response = new ApiResponse<>();
         response.setMessage("Lấy dữ liệu phòng chiếu thành công");
         response.setData(showtimeService.getBookingData(id));
+        return ResponseEntity.ok(response);
+    }
+    @GetMapping("/by-cinema")
+    public ResponseEntity<ApiResponse<List<MovieShowtimeResponse>>> getShowtimesByCinema(
+            @RequestParam Long cinemaId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+        ApiResponse<List<MovieShowtimeResponse>> response = new ApiResponse<>();
+        response.setData(showtimeService.getShowtimesByCinema(cinemaId, date));
         return ResponseEntity.ok(response);
     }
 }

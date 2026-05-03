@@ -38,4 +38,10 @@ public class MovieController {
 
         return ResponseEntity.ok(response);
     }
+    @GetMapping("/coming-soon")
+    public ResponseEntity<ApiResponse<List<MovieResponse>>> getComingSoon() {
+        ApiResponse<List<MovieResponse>> response = new ApiResponse<>();
+        response.setData(movieService.getComingSoonMovies());
+        return ResponseEntity.ok(response);
+    }
 }

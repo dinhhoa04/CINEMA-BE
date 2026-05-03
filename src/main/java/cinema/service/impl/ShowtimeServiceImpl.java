@@ -16,7 +16,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
+import cinema.dto.response.MovieShowtimeResponse;
 
 @Service
 @RequiredArgsConstructor
@@ -111,5 +111,34 @@ public class ShowtimeServiceImpl implements ShowtimeService {
                 .format(showtime.getSubtitle() != null ? showtime.getSubtitle() : "2D")
                 .seats(seatResponses)
                 .build();
+    }
+    @Override
+    public List<MovieShowtimeResponse> getShowtimesByCinema(Long cinemaId, LocalDate date) {
+        List<Showtime> rawShowtimes = showtimeRepository.findShowtimesByCinemaAndDate(cinemaId, date);
+
+        // Gom nhóm theo Phim
+        Map<Movie, List<Showtime>> groupedByMovie = rawShowtimes.stream()
+                .collect(Collectors.groupingBy(Showtime::getMovie));
+
+        return groupedByMovie.entrySet().stream().map(entry -> {
+            Movie movie = entry.getKey();
+            List<Showtime> showtimes = entry.getValue();
+
+            List<ShowtimeDetailResponse> timeResponses = showtimes.stream()
+                    .map(st -> ShowtimeDetailResponse.builder()
+                            .showtimeId(st.getId())
+                            .startTime(st.getStartTime().format(DateTimeFormatter.ofPattern("HH:mm")))
+                            .format(st.getSubtitle() != null ? st.getSubtitle() : "2D")
+                            .build())
+                    .collect(Collectors.toList());
+
+            return MovieShowtimeResponse.builder()
+                    .movieId(movie.getId())
+                    .movieTitle(movie.getTitle())
+                    .posterUrl(movie.getPosterUrl())
+                    .rated(movie.getRated() != null ? movie.getRated().name() : "T18")
+                    .times(timeResponses)
+                    .build();
+        }).collect(Collectors.toList());
     }
 }
