@@ -1,9 +1,6 @@
 package cinema.controller;
 
-import cinema.dto.response.ApiResponse;
-import cinema.dto.response.BookingPageDataResponse;
-import cinema.dto.response.CinemaShowtimeResponse;
-import cinema.dto.response.MovieShowtimeResponse;
+import cinema.dto.response.*;
 import cinema.service.ShowtimeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -16,6 +13,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/showtimes")
 @RequiredArgsConstructor
+@CrossOrigin("*")
 public class ShowtimeController {
 
     private final ShowtimeService showtimeService;
@@ -37,9 +35,10 @@ public class ShowtimeController {
     }
 
     // THÊM API NÀY ĐỂ FRONTEND GỌI LẤY GHẾ
+    // THÊM API NÀY ĐỂ FRONTEND GỌI LẤY GHẾ
     @GetMapping("/{id}/booking-data")
-    public ResponseEntity<ApiResponse<BookingPageDataResponse>> getBookingData(@PathVariable Long id) {
-        ApiResponse<BookingPageDataResponse> response = new ApiResponse<>();
+    public ResponseEntity<ApiResponse<BookingDataResponse>> getBookingData(@PathVariable Long id) {
+        ApiResponse<BookingDataResponse> response = new ApiResponse<>();
         response.setMessage("Lấy dữ liệu phòng chiếu thành công");
         response.setData(showtimeService.getBookingData(id));
         return ResponseEntity.ok(response);
@@ -52,4 +51,5 @@ public class ShowtimeController {
         response.setData(showtimeService.getShowtimesByCinema(cinemaId, date));
         return ResponseEntity.ok(response);
     }
+
 }
