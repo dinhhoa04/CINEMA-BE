@@ -62,4 +62,8 @@ public class Promotion {
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
+    @Column(name = "applicable_cinema_ids")
+    private String applicableCinemaIds;
+    @Column(name = "image_url")
+    private String imageUrl;
 }

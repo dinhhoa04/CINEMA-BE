@@ -11,4 +11,5 @@ public class BookingRequest {
     private List<Long> seatIds;
     private Map<Long, Integer> cart; // Map chứa FoodId -> Số lượng
     private BigDecimal finalTotal;   // Tổng tiền thanh toán
+    private String promoCode;
 }

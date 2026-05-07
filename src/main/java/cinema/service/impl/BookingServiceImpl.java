@@ -30,6 +30,8 @@ public class BookingServiceImpl implements BookingService {
     private final BookingSeatRepository bookingSeatRepository;
     private final BookingFoodItemRepository bookingFoodItemRepository;
     private final ShowtimeSeatStatusRepository showtimeSeatStatusRepository;
+    private final PromotionServiceImpl promotionService;
+
 
     @Override
     @Transactional // Đảm bảo nếu lỗi ở bước nào thì Rollback lại toàn bộ
@@ -89,6 +91,13 @@ public class BookingServiceImpl implements BookingService {
             }
         }
 
+        if (request.getPromoCode() != null && !request.getPromoCode().trim().isEmpty()) {
+            // Lấy ID user hiện tại (nếu hàm createBooking của bạn chưa truyền userId vào thì tạm hardcode 1L giống lúc test)
+            Long currentUserId = booking.getUser().getId();
+
+            // Gọi sang hàm commit bên PromotionService để: Tăng usageCount và Ghi vào bảng user_promotions
+            promotionService.commitPromotionUsage(request.getPromoCode(), currentUserId);
+        }
         // Trả về mã vé để Frontend hiển thị
         return booking.getBookingCode();
     }

@@ -24,6 +24,9 @@ public class MovieServiceImpl implements MovieService {
                         .id(movie.getId())
                         .title(movie.getTitle())
                         .posterUrl(movie.getPosterUrl())
+                        .bannerUrl(movie.getBannerUrl())     // BỔ SUNG: Nạp ảnh ngang cho Banner
+                        .description(movie.getDescription()) // BỔ SUNG: Nạp mô tả phim
+                        .slug(movie.getSlug())               // BỔ SUNG: Nạp link thân thiện cho nút Đặt vé
                         .duration(movie.getDuration())
                         .releaseDate(movie.getReleaseDate())
                         .language(movie.getLanguage())
