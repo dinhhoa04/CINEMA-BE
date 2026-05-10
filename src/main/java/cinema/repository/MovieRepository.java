@@ -10,4 +10,5 @@ import java.util.Optional;
 public interface MovieRepository extends JpaRepository<Movie, Long> {
     List<Movie> findByStatus(cinema.enums.MovieStatus status);
     Optional<Movie> findBySlug(String slug);
+    List<Movie> findByStatus(String status);
 }

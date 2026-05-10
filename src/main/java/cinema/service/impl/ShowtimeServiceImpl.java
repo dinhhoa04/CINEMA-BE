@@ -127,7 +127,8 @@ public class ShowtimeServiceImpl implements ShowtimeService {
                     .colIndex(seat.getColNumber().intValue())
                     .typeId(seat.getSeatType().getId().intValue()) // Ép kiểu Byte sang int cho DTO
                     .status(currentStatus)
-                    .price(seatPrice.doubleValue()) // Ép kiểu BigDecimal sang Double cho DTO
+                    .price(seatPrice.doubleValue())// Ép kiểu BigDecimal sang Double cho DTO
+                    .isActive(seat.getIsActive())
                     .build();
         }).collect(Collectors.toList());
 

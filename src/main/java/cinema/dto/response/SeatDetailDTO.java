@@ -12,4 +12,5 @@ public class SeatDetailDTO {
     private Integer typeId;    // 1 (Standard), 2 (VIP)
     private String status;     // "AVAILABLE", "HOLDING", "BOOKED"
     private Double price;      // 80000.0
+    private Boolean isActive;
 }

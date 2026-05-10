@@ -3,12 +3,14 @@ package cinema.controller;
 import cinema.dto.response.ApiResponse;
 import cinema.dto.response.MovieResponse;
 import cinema.entity.Movie;
+import cinema.repository.GenreRepository;
 import cinema.repository.MovieRepository;
 import cinema.service.MovieService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -19,6 +21,7 @@ public class MovieController {
 
     private final MovieService movieService;
     private final MovieRepository movieRepository;
+    private final GenreRepository genreRepository;
 
     // API: Lấy danh sách phim đang chiếu
     @GetMapping("/now-showing")
@@ -62,5 +65,68 @@ public class MovieController {
         response.setData(movieService.getMovieById(movie.getId()));
 
         return ResponseEntity.ok(response);
+    }
+
+    // --- API CHO ADMIN (CRUD MOVIE) ---
+    @GetMapping("/all")
+    public ResponseEntity<ApiResponse<List<Movie>>> getAllMoviesAdmin() {
+        ApiResponse<List<Movie>> response = new ApiResponse<>();
+        response.setData(movieRepository.findAll());
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping
+    public ResponseEntity<?> createMovie(@RequestBody cinema.dto.request.MovieRequest request) {
+        Movie movie = new Movie();
+        mapMovieRequest(request, movie);
+        return ResponseEntity.ok(movieRepository.save(movie));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateMovie(@PathVariable Long id, @RequestBody cinema.dto.request.MovieRequest request) {
+        Movie movie = movieRepository.findById(id).orElseThrow(() -> new RuntimeException("Không tìm thấy phim"));
+        mapMovieRequest(request, movie);
+        return ResponseEntity.ok(movieRepository.save(movie));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteMovie(@PathVariable Long id) {
+        movieRepository.deleteById(id);
+        return ResponseEntity.ok("Xóa phim thành công");
+    }
+
+    private void mapMovieRequest(cinema.dto.request.MovieRequest request, Movie movie) {
+        movie.setTitle(request.getTitle());
+        movie.setTitleEn(request.getTitleEn());
+        movie.setSlug(request.getSlug());
+        movie.setDescription(request.getDescription());
+        movie.setDuration(request.getDuration());
+        movie.setReleaseDate(request.getReleaseDate());
+        movie.setLanguage(request.getLanguage());
+        movie.setRated(request.getRated());
+        movie.setStatus(request.getStatus());
+        movie.setPosterUrl(request.getPosterUrl());
+        movie.setBannerUrl(request.getBannerUrl());
+        movie.setTrailerUrl(request.getTrailerUrl());
+        movie.setBannerUrl(request.getBannerUrl());
+        movie.setDirector(request.getDirector());
+        movie.setCastMembers(request.getCastMembers());
+        movie.setIsFeatured(request.getIsFeatured() != null ? request.getIsFeatured() : false);
+        if (request.getAverageRating() != null) {
+            movie.setAverageRating(request.getAverageRating());
+        } else {
+            movie.setAverageRating(BigDecimal.ZERO); // Chuẩn mực của BigDecimal
+        }
+        // ĐOẠN CODE CẦU NỐI: Tự động tách chữ và tìm ID để lưu vào bảng movie_genres
+        if (request.getGenre() != null && !request.getGenre().isEmpty()) {
+            java.util.Set<cinema.entity.Genre> genreSet = new java.util.HashSet<>();
+            // Cắt chuỗi nếu gõ nhiều thể loại (VD: "Hành động, Hài hước")
+            String[] genreNames = request.getGenre().split(",");
+            for (String gName : genreNames) {
+                // Dò tìm trong Database, nếu thấy thì add vào phim
+                genreRepository.findByName(gName.trim()).ifPresent(genreSet::add);
+            }
+            movie.setGenres(genreSet);
+        }
     }
 }

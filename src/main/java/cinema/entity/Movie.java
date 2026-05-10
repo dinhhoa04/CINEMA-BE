@@ -79,6 +79,8 @@ public class Movie extends BaseEntity {
     @Column(name = "total_reviews")
     private Integer totalReviews = 0;
 
+
+
     @Column(name = "is_featured", columnDefinition = "TINYINT(1) DEFAULT 0")
     private Boolean isFeatured = false;
 
