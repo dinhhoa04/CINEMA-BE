@@ -10,4 +10,5 @@ import java.util.List;
 public interface BookingRepository extends JpaRepository<Booking, Long> {
     // Sắp xếp giảm dần theo ngày tạo (Vé mới nhất xếp lên đầu)
     List<Booking> findByUserIdOrderByCreatedAtDesc(Long userId);
+    List<Booking> findByUserId(Long userId);
 }

@@ -8,6 +8,7 @@ import cinema.repository.MovieRepository;
 import cinema.service.MovieService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -76,6 +77,7 @@ public class MovieController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> createMovie(@RequestBody cinema.dto.request.MovieRequest request) {
         Movie movie = new Movie();
         mapMovieRequest(request, movie);
@@ -83,6 +85,7 @@ public class MovieController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> updateMovie(@PathVariable Long id, @RequestBody cinema.dto.request.MovieRequest request) {
         Movie movie = movieRepository.findById(id).orElseThrow(() -> new RuntimeException("Không tìm thấy phim"));
         mapMovieRequest(request, movie);
@@ -90,6 +93,7 @@ public class MovieController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> deleteMovie(@PathVariable Long id) {
         movieRepository.deleteById(id);
         return ResponseEntity.ok("Xóa phim thành công");
