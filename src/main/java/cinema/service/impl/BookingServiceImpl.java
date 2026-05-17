@@ -1,6 +1,7 @@
 package cinema.service.impl;
 
 import cinema.dto.request.BookingRequest;
+import cinema.dto.response.BookingAdminResponse;
 import cinema.entity.*;
 import cinema.enums.BookingStatus;
 import cinema.enums.SeatStatus;
@@ -134,5 +135,57 @@ public class BookingServiceImpl implements BookingService {
                     .bookingDate(b.getCreatedAt().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")))
                     .build();
         }).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<BookingAdminResponse> getAllBookingsForAdmin() {
+        // Lấy tất cả vé, xếp mới nhất lên đầu
+        List<Booking> bookings = bookingRepository.findAll(org.springframework.data.domain.Sort.by(org.springframework.data.domain.Sort.Direction.DESC, "createdAt"));
+
+        return bookings.stream().map(b -> {
+            Showtime st = b.getShowtime();
+            User user = b.getUser();
+
+            // Lấy ghế (Nếu sau này bị chậm, ta sẽ tối ưu lại bằng IN query)
+            List<BookingSeat> seats = bookingSeatRepository.findByBookingId(b.getId());
+            String seatNames = seats.stream().map(BookingSeat::getSeatCode).collect(Collectors.joining(", "));
+
+            return BookingAdminResponse.builder()
+                    .id(b.getId())
+                    .bookingCode(b.getBookingCode())
+                    .customerName(user.getFullName())
+                    .customerPhone(user.getPhone())
+                    .customerEmail(user.getEmail())
+                    .movieTitle(st.getMovie().getTitle())
+                    .cinemaName(st.getHall().getCinema().getName())
+                    .hallName(st.getHall().getName())
+                    .showTime(st.getStartTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")))
+                    .seatNames(seatNames)
+                    .finalAmount(b.getFinalAmount())
+                    .status(b.getStatus().name())
+                    .paymentMethod("VNPAY") // Tạm fix cứng hoặc lấy từ Payment nếu bạn đã code bảng Payment
+                    .bookingTime(b.getCreatedAt())
+                    .qrCodeUrl(b.getQrCodeUrl()) // Lấy QR
+                    .build();
+        }).collect(Collectors.toList());
+    }
+
+
+    @Override
+    public void checkInTicket(String bookingCode) {
+        // Tìm vé theo mã vé (bookingCode)
+        Booking booking = bookingRepository.findByBookingCode(bookingCode)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy mã vé: " + bookingCode));
+
+        // Kiểm tra xem vé có đúng là Đang chờ soát (PAID) không
+        if (!booking.getStatus().name().equals("PAID")) {
+            throw new RuntimeException("Vé này đã được soát hoặc đã bị hủy, không thể Check-in!");
+        }
+
+        // Đổi trạng thái sang CHECKED_IN (hoặc dùng Enum BookingStatus.CHECKED_IN tùy cấu trúc của bạn)
+        booking.setStatus(cinema.enums.BookingStatus.valueOf("CHECKED_IN"));
+
+        // Lưu xuống Database
+        bookingRepository.save(booking);
     }
 }

@@ -38,4 +38,31 @@ public class BookingController {
 
         return ResponseEntity.ok(response);
     }
+
+    // LẤY TẤT CẢ VÉ CHO ADMIN (Cần quyền Admin hoặc Staff)
+    @GetMapping("/admin")
+    @org.springframework.security.access.prepost.PreAuthorize("hasAuthority('ADMIN') or hasAuthority('ROLE_ADMIN') or hasAuthority('STAFF') or hasAuthority('ROLE_STAFF')")
+    public ResponseEntity<ApiResponse<List<cinema.dto.response.BookingAdminResponse>>> getAllBookings() {
+        List<cinema.dto.response.BookingAdminResponse> data = bookingService.getAllBookingsForAdmin();
+        ApiResponse<List<cinema.dto.response.BookingAdminResponse>> response = new ApiResponse<>();
+        response.setMessage("Thành công");
+        response.setData(data);
+        return ResponseEntity.ok(response);
+    }
+
+    // API Cập nhật trạng thái Soát vé
+    @PutMapping("/{bookingCode}/checkin")
+    @org.springframework.security.access.prepost.PreAuthorize("hasAuthority('ADMIN') or hasAuthority('ROLE_ADMIN') or hasAuthority('STAFF') or hasAuthority('ROLE_STAFF')")
+    public ResponseEntity<ApiResponse<String>> checkInTicket(@PathVariable("bookingCode") String bookingCode){
+        try {
+            bookingService.checkInTicket(bookingCode);
+            ApiResponse<String> response = new ApiResponse<>();
+            response.setMessage("Soát vé thành công!");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            ApiResponse<String> response = new ApiResponse<>();
+            response.setMessage(e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
 }
