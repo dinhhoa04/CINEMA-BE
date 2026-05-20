@@ -78,6 +78,7 @@ public class UserController {
                         : "CUSTOMER";
 
                 map.put("roleName", roleName);
+                map.put("permissions", user.getPermissions() != null ? user.getPermissions() : "");
                 return map;
             }).toList();
             return ResponseEntity.ok(new ApiResponse<>(200, "Thành công", response));
@@ -135,6 +136,15 @@ public class UserController {
         user.setRole(role);
         userRepository.save(user);
         return ResponseEntity.ok(new ApiResponse<>(200, "Cập nhật quyền thành công", null));
+    }
+
+    @PatchMapping("/{id}/permissions")
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<ApiResponse<String>> updatePermissions(@PathVariable Long id, @RequestBody java.util.Map<String, String> req) {
+        User user = userRepository.findById(id).orElseThrow();
+        user.setPermissions(req.get("permissions"));
+        userRepository.save(user);
+        return ResponseEntity.ok(new ApiResponse<>(200, "Cập nhật chức năng nhân viên thành công", null));
     }
 
     @DeleteMapping("/{id}")

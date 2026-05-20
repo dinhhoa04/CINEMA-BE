@@ -75,6 +75,7 @@ public class AuthServiceImpl implements AuthService {
                 .fullName(user.getFullName())
                 .avatarUrl(user.getAvatarUrl())
                 .role(user.getRole().getName().name())
+                .permissions(user.getPermissions() != null ? user.getPermissions() : "")
                 .email(user.getEmail())
                 .phone(user.getPhone())
                 .build();

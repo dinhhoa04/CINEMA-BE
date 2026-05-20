@@ -56,6 +56,9 @@ public class User extends BaseEntity {
     @Column(columnDefinition = "INT UNSIGNED DEFAULT 0")
     private Integer points = 0;
 
+    @Column(name = "permissions")
+    private String permissions;
+
     // Hàm này sẽ tự động sinh mã UUID trước khi lưu xuống Database
     @PrePersist
     protected void onCreate() {
