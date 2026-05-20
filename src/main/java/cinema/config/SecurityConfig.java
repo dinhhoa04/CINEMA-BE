@@ -75,6 +75,8 @@ public class SecurityConfig {
                         // Thêm "/api/v1/foods/**" vào danh sách cho phép (permitAll)
                         .requestMatchers(HttpMethod.GET,"/api/v1/auth/**", "/api/v1/system/**", "/api/v1/foods/**").permitAll()
                         // Cửa 3: Tất cả các đường còn lại (đặt vé, thanh toán, admin) ĐỀU PHẢI TRÌNH THẺ
+                        .requestMatchers("/api/v1/payments/momo/ipn").permitAll()
+                        .requestMatchers("/api/v1/payments/status/**").permitAll()
                         .anyRequest().authenticated()
                 );
 

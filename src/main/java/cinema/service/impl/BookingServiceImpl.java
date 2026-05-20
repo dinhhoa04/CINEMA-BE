@@ -49,7 +49,7 @@ public class BookingServiceImpl implements BookingService {
         booking.setSubtotal(request.getFinalTotal()); // (Thực tế nên tự tính lại ở BE để bảo mật)
         booking.setTotalAmount(request.getFinalTotal());
         booking.setFinalAmount(request.getFinalTotal());
-        booking.setStatus(BookingStatus.PAID); // Gắn cờ ĐÃ THANH TOÁN ẢO
+        booking.setStatus(BookingStatus.PENDING); // Gắn cờ ĐÃ THANH TOÁN ẢO
         bookingRepository.save(booking);
 
         // 2. Lưu chi tiết Ghế & Cập nhật trạng thái ghế thành BOOKED

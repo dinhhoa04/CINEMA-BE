@@ -3,20 +3,24 @@ spring:
     name: cinema-demo
   jackson:
     property-naming-strategy: LOWER_CAMEL_CASE
-
-  # Cấu hình kết nối MySQL
   datasource:
     url: jdbc:mysql://localhost:3306/movie_ticket_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
     username: root
     password: 123456
     driver-class-name: com.mysql.cj.jdbc.Driver
-
-  # Cấu hình Hibernate (Tự động tạo bảng từ Entity)
   jpa:
     hibernate:
       ddl-auto: validate
-    show-sql: true     # In câu lệnh SQL ra console để dễ debug
+    show-sql: true
     properties:
       hibernate:
         format_sql: true
         dialect: org.hibernate.dialect.MySQLDialect
+
+momo:
+  partner-code: "MOMO"
+  access-key: "F8BBA842ECF85"
+  secret-key: "K951B6PE1waDMi640xX08PD3vg6EkVlz"
+  endpoint: "https://test-payment.momo.vn/v2/gateway/api/create"
+  return-url: "http://localhost:5173/payment/result"
+  ipn-url: "https://abruptly-clarify-bagging.ngrok-free.dev/api/v1/payments/momo/ipn"
